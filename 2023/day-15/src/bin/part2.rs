@@ -1,11 +1,11 @@
+use array_init::array_init;
 use std::fs::read_to_string;
 use std::time::Instant;
-use array_init::array_init;
 
 #[derive(PartialEq, Debug)]
 enum LenseOp {
-    PUT,
-    REMOVE
+    Put,
+    Remove,
 }
 
 #[derive(Debug)]
@@ -13,13 +13,13 @@ struct StepDesc {
     label_hash: u8,
     label: String,
     op: LenseOp,
-    value: u32
+    value: u32,
 }
 
 #[derive(Default, Debug)]
 struct Lense {
     label: String,
-    value: u32
+    value: u32,
 }
 
 const NUMBER_OF_BOXES: usize = 256;
@@ -30,35 +30,38 @@ type Boxes = [Box; NUMBER_OF_BOXES];
 fn main() {
     let now = Instant::now();
 
-    let line: String = read_lines("./src/bin/input1.txt").first().unwrap().to_string();
+    let line: String = read_lines("./src/bin/input1.txt")
+        .first()
+        .unwrap()
+        .to_string();
     let steps: Vec<String> = get_all_steps(line);
 
     let mut steps_descriptors: Vec<StepDesc> = Vec::new();
     for step in steps {
         let label: String;
-        let mut operation: LenseOp = LenseOp::REMOVE;
+        let mut operation: LenseOp = LenseOp::Remove;
         let mut value: u32 = 0;
         if step.contains('-') {
             label = step.split('-').next().unwrap().to_string();
         } else {
             label = step.split('=').next().unwrap().to_string();
             value = step.split('=').last().unwrap().parse().unwrap();
-            operation = LenseOp::PUT;
+            operation = LenseOp::Put;
         }
         let hash: u8 = calculate_hash_value(label.clone());
-        steps_descriptors.push(StepDesc{
+        steps_descriptors.push(StepDesc {
             label_hash: hash,
-            label: label,
+            label,
             op: operation,
-            value: value
+            value,
         });
     }
 
     let mut boxes: Boxes = array_init(|_| Default::default());
     for step_desc in steps_descriptors {
-        if step_desc.op == LenseOp::PUT {
+        if step_desc.op == LenseOp::Put {
             put_lense_into_box(&mut boxes, &step_desc);
-        } else if step_desc.op == LenseOp::REMOVE {
+        } else if step_desc.op == LenseOp::Remove {
             remove_lense_from_box(&mut boxes, &step_desc);
         } else {
             println!("ERROR");
@@ -68,7 +71,11 @@ fn main() {
     let focusing_power = calculate_focusing_power(&boxes);
     println!("Final focusing power: {}", focusing_power);
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
 fn calculate_focusing_power(boxes: &Boxes) -> u32 {
@@ -81,21 +88,23 @@ fn calculate_focusing_power(boxes: &Boxes) -> u32 {
     focusing_power
 }
 
-fn remove_lense_from_box(boxes: &mut Boxes, step_desc: &StepDesc) -> () {
-    let box_index = is_label_in_box(&boxes[step_desc.label_hash as usize], &step_desc.label);
-    if box_index.is_some() {
-        boxes[step_desc.label_hash as usize].remove(box_index.unwrap() as usize);
+fn remove_lense_from_box(boxes: &mut Boxes, step_desc: &StepDesc) {
+    if let Some(box_index) =
+        is_label_in_box(&boxes[step_desc.label_hash as usize], &step_desc.label)
+    {
+        boxes[step_desc.label_hash as usize].remove(box_index);
     }
 }
 
-fn put_lense_into_box(boxes: &mut [Box], step_desc: &StepDesc) -> () {
-    let box_index = is_label_in_box(&boxes[step_desc.label_hash as usize], &step_desc.label);
-    if box_index.is_some() {
-        boxes[step_desc.label_hash as usize][box_index.unwrap()].value = step_desc.value;
+fn put_lense_into_box(boxes: &mut [Box], step_desc: &StepDesc) {
+    if let Some(box_index) =
+        is_label_in_box(&boxes[step_desc.label_hash as usize], &step_desc.label)
+    {
+        boxes[step_desc.label_hash as usize][box_index].value = step_desc.value;
     } else {
-        boxes[step_desc.label_hash as usize].push(Lense{
+        boxes[step_desc.label_hash as usize].push(Lense {
             label: step_desc.label.clone(),
-            value: step_desc.value
+            value: step_desc.value,
         });
     }
 }
@@ -119,7 +128,9 @@ fn is_label_in_box(single_box: &Box, label: &String) -> Option<usize> {
 }
 
 fn get_all_steps(line: String) -> Vec<String> {
-    line.split(',').map(|s| s.parse().expect("Parsing error")).collect()
+    line.split(',')
+        .map(|s| s.parse().expect("Parsing error"))
+        .collect()
 }
 
 fn read_lines(filename: &str) -> Vec<String> {

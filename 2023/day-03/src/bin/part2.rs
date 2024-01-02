@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use std::collections::HashMap;
+use std::fs::read_to_string;
 
 type Position = (usize, usize);
 
@@ -11,9 +11,10 @@ fn main() {
         let found_parts_with_star = find_parts_with_star(line, index, &lines);
         // Extend the map with keeping already existing values in original map
         for (key, values) in found_parts_with_star {
-            parts.entry(key)
-                 .and_modify(|existing_val| existing_val.extend(&values))
-                 .or_insert(values);
+            parts
+                .entry(key)
+                .and_modify(|existing_val| existing_val.extend(&values))
+                .or_insert(values);
         }
     }
 
@@ -28,24 +29,31 @@ fn main() {
     println!("The sum is: {}", sum);
 }
 
-fn find_parts_with_star(line: &String, line_index: usize, lines: &Vec<String>) -> HashMap<Position, Vec<u32>> {
+fn find_parts_with_star(
+    line: &String,
+    line_index: usize,
+    lines: &Vec<String>,
+) -> HashMap<Position, Vec<u32>> {
     let mut num_str: String = String::new();
     let mut parts: HashMap<Position, Vec<u32>> = HashMap::new();
 
     for (ch_index, ch) in line.chars().enumerate() {
-        if ch.to_digit(10).is_some() {
+        if ch.is_ascii_digit() {
             num_str.push(ch);
         }
-        if ((!ch.to_digit(10).is_some()) || (ch_index == (line.len()-1))) && (num_str.len() > 0) {
+        if (!ch.is_ascii_digit() || (ch_index == (line.len() - 1))) && !num_str.is_empty() {
             let result = is_part_number_with_star(lines, line_index, ch_index, num_str.len());
-            match result {
-                Some(coordinates) => {
-                    for position in coordinates {
-                        println!("Star found around {} number - position {:?}", num_str, position);
-                        parts.entry(position).or_insert_with(Vec::new).push(num_str.parse().unwrap());
-                    }
-                },
-                None => (),
+            if let Some(coordinates) = result {
+                for position in coordinates {
+                    println!(
+                        "Star found around {} number - position {:?}",
+                        num_str, position
+                    );
+                    parts
+                        .entry(position)
+                        .or_insert_with(Vec::new)
+                        .push(num_str.parse().unwrap());
+                }
             }
             num_str.clear();
         }
@@ -55,7 +63,12 @@ fn find_parts_with_star(line: &String, line_index: usize, lines: &Vec<String>) -
 }
 
 // It cannot return early, because all the stars must be found
-fn is_part_number_with_star(lines: &Vec<String>, line_index: usize, char_index: usize, num_digits_count: usize) -> Option<Vec<Position>> {
+fn is_part_number_with_star(
+    lines: &Vec<String>,
+    line_index: usize,
+    char_index: usize,
+    num_digits_count: usize,
+) -> Option<Vec<Position>> {
     const GEAR_SIGN: char = '*';
 
     let mut star_positions: Vec<Position> = Vec::new();
@@ -65,7 +78,12 @@ fn is_part_number_with_star(lines: &Vec<String>, line_index: usize, char_index: 
     . . . 1 2 3 X .
     . . . . . . . .
      */
-    if !lines[line_index].chars().nth(char_index).unwrap().is_digit(10) {
+    if !lines[line_index]
+        .chars()
+        .nth(char_index)
+        .unwrap()
+        .is_ascii_digit()
+    {
         if lines[line_index].chars().nth(char_index).unwrap() == GEAR_SIGN {
             star_positions.push((line_index, char_index));
         }
@@ -78,7 +96,12 @@ fn is_part_number_with_star(lines: &Vec<String>, line_index: usize, char_index: 
      */
     if char_index > num_digits_count {
         let mut index = char_index - num_digits_count;
-        if lines[line_index].chars().nth(index).unwrap().is_digit(10) {
+        if lines[line_index]
+            .chars()
+            .nth(index)
+            .unwrap()
+            .is_ascii_digit()
+        {
             index -= 1;
         }
         if lines[line_index].chars().nth(index).unwrap() == GEAR_SIGN {
@@ -93,8 +116,8 @@ fn is_part_number_with_star(lines: &Vec<String>, line_index: usize, char_index: 
      */
     if line_index > 0 {
         for i in 0..signs_to_check_horizontally {
-            if lines[line_index - 1].chars().nth(char_index-i).unwrap() == GEAR_SIGN {
-                star_positions.push((line_index - 1, char_index-i));
+            if lines[line_index - 1].chars().nth(char_index - i).unwrap() == GEAR_SIGN {
+                star_positions.push((line_index - 1, char_index - i));
             }
         }
     }
@@ -105,13 +128,13 @@ fn is_part_number_with_star(lines: &Vec<String>, line_index: usize, char_index: 
      */
     if line_index < (lines.len() - 1) {
         for i in 0..signs_to_check_horizontally {
-            if lines[line_index + 1].chars().nth(char_index-i).unwrap() == GEAR_SIGN {
-                star_positions.push((line_index + 1, char_index-i));
+            if lines[line_index + 1].chars().nth(char_index - i).unwrap() == GEAR_SIGN {
+                star_positions.push((line_index + 1, char_index - i));
             }
         }
     }
 
-    if star_positions.len() > 0 {
+    if !star_positions.is_empty() {
         return Some(star_positions);
     }
 

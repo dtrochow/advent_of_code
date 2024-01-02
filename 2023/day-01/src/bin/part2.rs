@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate maplit;
 
-use std::fs::read_to_string;
 use std::collections::HashMap;
+use std::fs::read_to_string;
 
 fn main() {
     let lines = read_lines("./src/bin/input1.txt");
@@ -33,8 +33,7 @@ fn find_number_in_string(characters: &str) -> Option<u32> {
     }
 
     for ch in characters.chars() {
-        if ch.is_digit(10)
-        {
+        if ch.is_ascii_digit() {
             return Some(ch.to_digit(10).unwrap());
         }
     }
@@ -58,12 +57,9 @@ fn find_number(obfuscated_str: &str) -> u32 {
     for character in obfuscated_str.chars() {
         left_string.push(character);
         let result = find_number_in_string(&left_string);
-        match result {
-            Some(value) => { 
-                first_digit = value;
-                break;
-            },
-            None => (),
+        if let Some(value) = result {
+            first_digit = value;
+            break;
         }
     }
 
@@ -72,12 +68,9 @@ fn find_number(obfuscated_str: &str) -> u32 {
     for character in obfuscated_str.chars().rev() {
         right_string = prepend_string(right_string, character);
         let result = find_number_in_string(&right_string);
-        match result {
-            Some(value) => { 
-                second_digit = value;
-                break;
-            },
-            None => (),
+        if let Some(value) = result {
+            second_digit = value;
+            break;
         }
     }
 

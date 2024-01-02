@@ -14,10 +14,10 @@ fn find_numbers(line: &String, line_index: usize, lines: &Vec<String>) -> Vec<u3
     let mut num_str: String = String::new();
 
     for (ch_index, ch) in line.chars().enumerate() {
-        if ch.to_digit(10).is_some() {
+        if ch.is_ascii_digit() {
             num_str.push(ch);
         }
-        if ((!ch.to_digit(10).is_some()) || (ch_index == (line.len()-1))) && (num_str.len() > 0) {
+        if ((!ch.is_ascii_digit()) || (ch_index == (line.len() - 1))) && !num_str.is_empty() {
             if is_part_number(lines, line_index, ch_index, num_str.len()) {
                 numbers.push(num_str.parse().unwrap());
             }
@@ -28,7 +28,12 @@ fn find_numbers(line: &String, line_index: usize, lines: &Vec<String>) -> Vec<u3
     numbers
 }
 
-fn is_part_number(lines: &Vec<String>, line_index: usize, char_index: usize, num_digits_count: usize) -> bool {
+fn is_part_number(
+    lines: &Vec<String>,
+    line_index: usize,
+    char_index: usize,
+    num_digits_count: usize,
+) -> bool {
     const DOT_SIGN: char = '.';
     let mut signs_to_check_horizontally: usize = num_digits_count;
     /*
@@ -36,7 +41,12 @@ fn is_part_number(lines: &Vec<String>, line_index: usize, char_index: usize, num
     . . . 1 2 3 X .
     . . . . . . . .
      */
-    if !lines[line_index].chars().nth(char_index).unwrap().is_digit(10) {
+    if !lines[line_index]
+        .chars()
+        .nth(char_index)
+        .unwrap()
+        .is_ascii_digit()
+    {
         if lines[line_index].chars().nth(char_index).unwrap() != DOT_SIGN {
             return true;
         }
@@ -49,7 +59,12 @@ fn is_part_number(lines: &Vec<String>, line_index: usize, char_index: usize, num
      */
     if char_index > num_digits_count {
         let mut index = char_index - num_digits_count;
-        if lines[line_index].chars().nth(index).unwrap().is_digit(10) {
+        if lines[line_index]
+            .chars()
+            .nth(index)
+            .unwrap()
+            .is_ascii_digit()
+        {
             index -= 1;
         }
         if lines[line_index].chars().nth(index).unwrap() != DOT_SIGN {
@@ -64,7 +79,7 @@ fn is_part_number(lines: &Vec<String>, line_index: usize, char_index: usize, num
      */
     if line_index > 0 {
         for i in 0..signs_to_check_horizontally {
-            if lines[line_index - 1].chars().nth(char_index-i).unwrap() != DOT_SIGN {
+            if lines[line_index - 1].chars().nth(char_index - i).unwrap() != DOT_SIGN {
                 return true;
             }
         }
@@ -76,7 +91,7 @@ fn is_part_number(lines: &Vec<String>, line_index: usize, char_index: usize, num
      */
     if line_index < (lines.len() - 1) {
         for i in 0..signs_to_check_horizontally {
-            if lines[line_index + 1].chars().nth(char_index-i).unwrap() != DOT_SIGN {
+            if lines[line_index + 1].chars().nth(char_index - i).unwrap() != DOT_SIGN {
                 return true;
             }
         }

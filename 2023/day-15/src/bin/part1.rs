@@ -4,7 +4,10 @@ use std::time::Instant;
 fn main() {
     let now = Instant::now();
 
-    let line: String = read_lines("./src/bin/input1.txt").first().unwrap().to_string();
+    let line: String = read_lines("./src/bin/input1.txt")
+        .first()
+        .unwrap()
+        .to_string();
     let steps: Vec<String> = get_all_steps(line);
 
     let mut sum: u64 = 0;
@@ -12,7 +15,11 @@ fn main() {
         sum += calculate_hash_value(step) as u64;
     }
     println!("Sum: {}", sum);
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
 fn calculate_hash_value(step: String) -> u8 {
@@ -25,7 +32,9 @@ fn calculate_hash_value(step: String) -> u8 {
 }
 
 fn get_all_steps(line: String) -> Vec<String> {
-    line.split(',').map(|s| s.parse().expect("Parsing error")).collect()
+    line.split(',')
+        .map(|s| s.parse().expect("Parsing error"))
+        .collect()
 }
 
 fn read_lines(filename: &str) -> Vec<String> {

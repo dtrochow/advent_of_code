@@ -1,4 +1,3 @@
-
 use std::fs::read_to_string;
 
 fn main() {
@@ -13,8 +12,7 @@ fn main() {
 fn find_number(obfuscated_str: &str) -> u32 {
     let mut digit_vec: Vec<u32> = Vec::new();
     for ch in obfuscated_str.chars() {
-        if ch.is_digit(10)
-        {
+        if ch.is_ascii_digit() {
             digit_vec.push(ch.to_digit(10).unwrap());
         }
     }

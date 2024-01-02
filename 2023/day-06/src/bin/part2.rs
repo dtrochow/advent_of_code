@@ -6,12 +6,24 @@ fn main() {
 
     let lines: Vec<String> = read_lines("./src/bin/input1.txt");
 
-    let time: u64 = lines[0].trim().split(':').last().unwrap()
-                            .split_whitespace().collect::<String>()
-                            .parse().expect("Parsing error");
-    let record_distance: u64 = lines[1].trim().split(':').last().unwrap()
-                                       .split_whitespace().collect::<String>()
-                                       .parse().expect("Parsing error");
+    let time: u64 = lines[0]
+        .trim()
+        .split(':')
+        .last()
+        .unwrap()
+        .split_whitespace()
+        .collect::<String>()
+        .parse()
+        .expect("Parsing error");
+    let record_distance: u64 = lines[1]
+        .trim()
+        .split(':')
+        .last()
+        .unwrap()
+        .split_whitespace()
+        .collect::<String>()
+        .parse()
+        .expect("Parsing error");
 
     let mut number_of_ways: u32 = 0;
 
@@ -24,7 +36,11 @@ fn main() {
 
     println!("The numbers of ways is: {}", number_of_ways);
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
 fn read_lines(filename: &str) -> Vec<String> {

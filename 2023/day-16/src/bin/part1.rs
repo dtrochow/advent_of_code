@@ -5,16 +5,16 @@ type Grid = Vec<Vec<char>>;
 
 #[repr(u8)]
 enum TileType {
-    Empty = '.' as u8,
-    RightHeadedMirror = '/' as u8,
-    LeftHeadedMirror = '\\' as u8,
-    HorizontalLine = '-' as u8,
-    VerticalLine = '|' as u8
+    Empty = b'.',
+    RightHeadedMirror = b'/',
+    LeftHeadedMirror = b'\\',
+    HorizontalLine = b'-',
+    VerticalLine = b'|',
 }
 
 struct Position {
     x: usize,
-    y: usize
+    y: usize,
 }
 
 #[derive(PartialEq, Clone)]
@@ -22,12 +22,12 @@ enum Direction {
     Left,
     Right,
     Up,
-    Down
+    Down,
 }
 
 struct Beam {
     direction: Direction,
-    energized_tiles: Vec<Position>
+    energized_tiles: Vec<Position>,
 }
 
 fn main() {
@@ -39,25 +39,28 @@ fn main() {
         grid.push(line.chars().collect());
     }
 
-    let mut beams: Vec<Beam> = vec![Beam{direction: Direction::Right, energized_tiles: vec![Position{x: 0, y: 0}]}];
+    let mut beams: Vec<Beam> = vec![Beam {
+        direction: Direction::Right,
+        energized_tiles: vec![Position { x: 0, y: 0 }],
+    }];
     spread_the_beams(&grid, &mut beams);
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
-fn spread_the_beams(grid: &Grid, beams: &mut Vec<Beam>) -> () {
-    while beams.iter().any(|b| false == is_beam_end(grid, b)) {
+fn spread_the_beams(grid: &Grid, beams: &mut [Beam]) {
+    while beams.iter().any(|b| !is_beam_end(grid, b)) {
         for beam in beams.iter_mut() {
-            if false == is_beam_end(grid, beam) {
-
-            }
+            if !is_beam_end(grid, beam) {}
         }
     }
 }
 
-fn expand_beam(beam: &mut) -> {
-    
-}
+fn expand_beam(beam: &mut Beam) {}
 
 fn is_beam_end(grid: &Grid, beam: &Beam) -> bool {
     let position: &Position = beam.energized_tiles.last().unwrap();
@@ -66,15 +69,10 @@ fn is_beam_end(grid: &Grid, beam: &Beam) -> bool {
     let grid_x_size = grid.first().unwrap().len();
     let grid_y_size = grid.len();
 
-    if (((position.x == 0) && (direction == Direction::Left)) ||
-       ((position.x == (grid_x_size - 1)) && (direction == Direction::Right)) ||
-       ((position.y == 0) && (direction == Direction::Up)) ||
-       ((position.x == (grid_y_size - 1)) && (direction == Direction::Down)))
-    {
-        return true;
-    }
-
-    false
+    ((position.x == 0) && (direction == Direction::Left))
+        || ((position.x == (grid_x_size - 1)) && (direction == Direction::Right))
+        || ((position.y == 0) && (direction == Direction::Up))
+        || ((position.x == (grid_y_size - 1)) && (direction == Direction::Down))
 }
 
 fn read_lines(filename: &str) -> Vec<String> {

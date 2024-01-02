@@ -1,11 +1,11 @@
+use std::fmt;
 use std::fs::read_to_string;
 use std::time::Instant;
-use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 struct Position {
     x: i32,
-    y: i32
+    y: i32,
 }
 
 impl fmt::Display for Position {
@@ -30,10 +30,12 @@ fn main() {
     }
     println!("Distances sum: {}", distances_sum);
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
-
-
 
 fn calculate_distance(pos1: &Position, pos2: &Position) -> u32 {
     let x_distance: i32 = pos2.x - pos1.x;
@@ -47,14 +49,17 @@ fn find_galaxies_positions(lines: Vec<String>) -> Vec<Position> {
     for (y, row) in lines.iter().enumerate() {
         for (x, ch) in row.chars().enumerate() {
             if ch == '#' {
-                galaxies_positions.push(Position{x: x as i32, y: y as i32});
+                galaxies_positions.push(Position {
+                    x: x as i32,
+                    y: y as i32,
+                });
             }
         }
     }
     galaxies_positions
 }
 
-fn expand_galaxy(galaxy: &mut Vec<String>) -> () {
+fn expand_galaxy(galaxy: &mut Vec<String>) {
     let rows_to_expand = find_rows_to_expand(galaxy);
     let columns_to_expand = find_columns_to_expand(galaxy);
 
@@ -70,7 +75,7 @@ fn expand_galaxy(galaxy: &mut Vec<String>) -> () {
     }
 }
 
-fn find_rows_to_expand(lines: &Vec<String>) -> Vec<u32> {
+fn find_rows_to_expand(lines: &[String]) -> Vec<u32> {
     let mut rows_to_expand: Vec<u32> = Vec::new();
     for (index, line) in lines.iter().enumerate() {
         if !line.contains('#') {

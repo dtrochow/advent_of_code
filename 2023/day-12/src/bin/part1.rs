@@ -3,7 +3,7 @@ use std::time::Instant;
 
 struct RowDesc {
     row: String,
-    groups: Vec<u32>
+    groups: Vec<u32>,
 }
 
 fn main() {
@@ -15,17 +15,28 @@ fn main() {
         println!("Row: {} Groups: {:?}", row_desc.row, row_desc.groups);
     }
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
 fn get_row_descriptors(lines: Vec<String>) -> Vec<RowDesc> {
     let mut row_descriptors: Vec<RowDesc> = Vec::new();
     for line in lines {
         let row_str: String = line.split_whitespace().next().unwrap().to_string();
-        let groups: Vec<u32> = line.split_whitespace().last().unwrap().split(',')
-                                                      .map(|s| s.parse().expect("Parsing error"))
-                                                      .collect();
-        row_descriptors.push(RowDesc{row: row_str, groups: groups});
+        let groups: Vec<u32> = line
+            .split_whitespace()
+            .last()
+            .unwrap()
+            .split(',')
+            .map(|s| s.parse().expect("Parsing error"))
+            .collect();
+        row_descriptors.push(RowDesc {
+            row: row_str,
+            groups,
+        });
     }
     row_descriptors
 }

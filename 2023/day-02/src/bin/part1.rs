@@ -1,19 +1,19 @@
 #[macro_use]
 extern crate maplit;
 
-use std::fs::read_to_string;
 use std::collections::HashMap;
+use std::fs::read_to_string;
 
 struct Set {
     red: u32,
     green: u32,
-    blue: u32
+    blue: u32,
 }
 
 enum Color {
     Red(u32),
     Green(u32),
-    Blue(u32)
+    Blue(u32),
 }
 
 fn main() {
@@ -31,7 +31,7 @@ fn main() {
     println!("The sum is: {}", sum);
 }
 
-fn get_id(game_desc: &String) -> u32 {
+fn get_id(game_desc: &str) -> u32 {
     let game: String = game_desc.split(':').next().unwrap_or_default().to_string();
     let id: String = game.split(' ').last().unwrap_or_default().to_string();
     id.parse().unwrap()
@@ -44,15 +44,19 @@ fn parse_cube_num(cube_desc: String) -> Option<Color> {
     let cubes_quantity: u32 = cube_key_val.first().unwrap().parse().unwrap();
 
     match color_string {
-        "red" => return Some(Color::Red(cubes_quantity)),
-        "green" => return Some(Color::Green(cubes_quantity)),
-        "blue" => return Some(Color::Blue(cubes_quantity)),
-        &_ => None
+        "red" => Some(Color::Red(cubes_quantity)),
+        "green" => Some(Color::Green(cubes_quantity)),
+        "blue" => Some(Color::Blue(cubes_quantity)),
+        &_ => None,
     }
 }
 
 fn parse_game_set(set_desc: String) -> Set {
-    let mut game = Set{red:0, green:0, blue:0};
+    let mut game = Set {
+        red: 0,
+        green: 0,
+        blue: 0,
+    };
     let mut cubes_with_values: Vec<Color> = Vec::<Color>::new();
 
     let cubes: Vec<&str> = set_desc.split(',').collect();
@@ -92,9 +96,15 @@ fn check_if_game_possible(game_desc: String, available_cubes: &HashMap<&str, u32
     let id = get_id(&game_desc);
     let sets: Vec<Set> = get_each_set_descriptors(game_desc);
     for set in sets {
-        if set.red > available_cubes["red"] { return 0 }
-        if set.green > available_cubes["green"] { return 0 }
-        if set.blue > available_cubes["blue"] { return 0 }
+        if set.red > available_cubes["red"] {
+            return 0;
+        }
+        if set.green > available_cubes["green"] {
+            return 0;
+        }
+        if set.blue > available_cubes["blue"] {
+            return 0;
+        }
     }
     id
 }

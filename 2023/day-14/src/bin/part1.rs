@@ -27,30 +27,33 @@ fn main() {
     }
 
     println!("Load: {}", load);
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
-fn tilt_to_the_north(grid: &mut Grid) -> () {
+fn tilt_to_the_north(grid: &mut Grid) {
     let horizontal_size = grid.first().unwrap().len();
     for column in 0..horizontal_size {
         move_round_rocks_in_column(grid, column);
     }
 }
 
-fn move_round_rocks_in_column(grid: &mut Grid, column: usize) -> () {
+fn move_round_rocks_in_column(grid: &mut Grid, column: usize) {
     let column_size = grid.len();
 
     for column_index in 1..column_size {
         if grid[column_index][column] == ROUND_ROCK {
-            let first_empty = find_first_empty(grid, column, column_index);
-            if first_empty.is_some() {
-                move_rock(grid, column, column_index, first_empty.unwrap());
+            if let Some(empty_id) = find_first_empty(grid, column, column_index) {
+                move_rock(grid, column, column_index, empty_id);
             }
         }
     }
 }
 
-fn move_rock(grid: &mut Grid, column: usize, column_index_1: usize, column_index_2: usize) -> () {
+fn move_rock(grid: &mut Grid, column: usize, column_index_1: usize, column_index_2: usize) {
     let tmp = grid[column_index_1][column];
     grid[column_index_1][column] = grid[column_index_2][column];
     grid[column_index_2][column] = tmp;

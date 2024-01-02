@@ -2,10 +2,10 @@
 extern crate maplit;
 
 use lazy_static::lazy_static;
+use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::fs::read_to_string;
 use std::time::Instant;
-use std::collections::HashMap;
-use std::cmp::Ordering;
 
 #[derive(PartialEq, PartialOrd)]
 enum HandType {
@@ -15,7 +15,7 @@ enum HandType {
     Three = 4,
     TwoPairs = 3,
     Pair = 2,
-    Single = 1
+    Single = 1,
 }
 
 lazy_static! {
@@ -58,66 +58,94 @@ fn main() {
     }
     println!("Total winnings: {}", total_winnings);
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
-fn find_type(hand: &String) -> HandType {
-    if one_of(5, hand, true)  { return HandType::Five;      }
-    if one_of(4, hand, true)  { return HandType::Four;      }
-    if full_house(hand)       { return HandType::FullHouse; }
-    if one_of(3, hand, true)  { return HandType::Three;     }
-    if two_pairs(hand, true)  { return HandType::TwoPairs;  }
-    if one_of(2, hand, true)  { return HandType::Pair;      }
+fn find_type(hand: &str) -> HandType {
+    if one_of(5, hand, true) {
+        return HandType::Five;
+    }
+    if one_of(4, hand, true) {
+        return HandType::Four;
+    }
+    if full_house(hand) {
+        return HandType::FullHouse;
+    }
+    if one_of(3, hand, true) {
+        return HandType::Three;
+    }
+    if two_pairs(hand, true) {
+        return HandType::TwoPairs;
+    }
+    if one_of(2, hand, true) {
+        return HandType::Pair;
+    }
 
     HandType::Single
 }
 
-fn one_of(how_many: u32, hand: &String, check_joker: bool) -> bool {
+fn one_of(how_many: u32, hand: &str, check_joker: bool) -> bool {
     let mut card_values: HashMap<u32, u32> = HashMap::new();
     for ch in hand.chars() {
-        card_values.entry(CARDS[&ch])
-                   .and_modify(|existing_val| *existing_val += 1)
-                   .or_insert(1);
+        card_values
+            .entry(CARDS[&ch])
+            .and_modify(|existing_val| *existing_val += 1)
+            .or_insert(1);
     }
 
     let mut max_count: u32 = 0;
     for (card_val, count) in card_values.clone().into_iter() {
-        if (count > max_count) && (card_val != CARDS[&'J']) { max_count = count; }
-        if count == how_many { return true; }
+        if (count > max_count) && (card_val != CARDS[&'J']) {
+            max_count = count;
+        }
+        if count == how_many {
+            return true;
+        }
     }
 
     let jokers_count = count_jokers(hand);
-    if ((how_many - max_count) <= jokers_count) && check_joker { return true; }
+    if ((how_many as i32 - max_count as i32) <= jokers_count as i32) && check_joker {
+        return true;
+    }
 
     false
 }
 
-fn count_jokers(hand: &String) -> u32 {
-    hand.chars().filter(|&ch| ch == 'J').count().try_into().unwrap()
+fn count_jokers(hand: &str) -> u32 {
+    hand.chars()
+        .filter(|&ch| ch == 'J')
+        .count()
+        .try_into()
+        .unwrap()
 }
 
-fn full_house(hand: &String) -> bool {
+fn full_house(hand: &str) -> bool {
     let jokers_count = count_jokers(hand);
-    if (one_of(3, hand, false) && one_of(2, hand, false)) || 
-       (one_of(3, hand, false) && (jokers_count >= 1)) ||
-       (two_pairs(hand, false) && (jokers_count >= 1)) || 
-       (jokers_count >= 4)
-    {
-        true
-    } else {
-        false
-    }
+    (one_of(3, hand, false) && one_of(2, hand, false))
+        || (one_of(3, hand, false) && (jokers_count >= 1))
+        || (two_pairs(hand, false) && (jokers_count >= 1))
+        || (jokers_count >= 4)
 }
 
-fn two_pairs(hand: &String, check_joker: bool) -> bool {
+fn two_pairs(hand: &str, check_joker: bool) -> bool {
     let mut card_values: HashMap<u32, u32> = HashMap::new();
     for ch in hand.chars() {
-        card_values.entry(CARDS[&ch])
-                   .and_modify(|existing_val| *existing_val += 1)
-                   .or_insert(1);
+        card_values
+            .entry(CARDS[&ch])
+            .and_modify(|existing_val| *existing_val += 1)
+            .or_insert(1);
     }
 
-    let pairs_count: u32 = card_values.values().filter(|&val| *val == 2).count().try_into().unwrap();
+    let pairs_count: u32 = card_values
+        .values()
+        .filter(|&val| *val == 2)
+        .count()
+        .try_into()
+        .unwrap();
 
     let jokers_count = count_jokers(hand);
     if (pairs_count == 2) || ((pairs_count == 1) && (jokers_count >= 1) && check_joker) {
@@ -127,7 +155,7 @@ fn two_pairs(hand: &String, check_joker: bool) -> bool {
     false
 }
 
-fn greater_first_card(a: &String, b: &String) -> Ordering {
+fn greater_first_card(a: &str, b: &str) -> Ordering {
     for (a_val, b_val) in a.chars().into_iter().zip(b.chars().into_iter()) {
         if a_val != b_val {
             if CARDS[&a_val] < CARDS[&b_val] {
@@ -141,14 +169,14 @@ fn greater_first_card(a: &String, b: &String) -> Ordering {
 }
 
 // Check if A is LESS or GREATER than B
-fn compare_two_hands(a: &String, b: &String) -> Ordering {
+fn compare_two_hands(a: &str, b: &str) -> Ordering {
     let a_type = find_type(a);
     let b_type = find_type(b);
 
     if a_type > b_type {
-        return Ordering::Greater;
+        Ordering::Greater
     } else if a_type < b_type {
-        return Ordering::Less;
+        Ordering::Less
     } else {
         greater_first_card(a, b)
     }

@@ -4,9 +4,16 @@ use std::time::Instant;
 fn main() {
     let now = Instant::now();
 
-    let line: String = read_lines("./src/bin/input1.txt").first().unwrap().to_string();
+    let line: String = read_lines("./src/bin/input1.txt")
+        .first()
+        .unwrap()
+        .to_string();
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
 fn read_lines(filename: &str) -> Vec<String> {

@@ -1,7 +1,7 @@
+use num::integer::lcm;
+use std::collections::HashMap;
 use std::fs::read_to_string;
 use std::time::Instant;
-use std::collections::HashMap;
-use num::integer::lcm;
 
 fn main() {
     let now = Instant::now();
@@ -13,8 +13,24 @@ fn main() {
     let mut map: HashMap<String, (String, String)> = HashMap::new();
     for node in lines.iter().skip(2) {
         let node_id = node.split('=').next().unwrap().trim().to_string();
-        let left_connection = node.split('(').last().unwrap().split(',').next().unwrap().trim().to_string();
-        let right_connection = node.split(')').next().unwrap().split(',').last().unwrap().trim().to_string();
+        let left_connection = node
+            .split('(')
+            .last()
+            .unwrap()
+            .split(',')
+            .next()
+            .unwrap()
+            .trim()
+            .to_string();
+        let right_connection = node
+            .split(')')
+            .next()
+            .unwrap()
+            .split(',')
+            .last()
+            .unwrap()
+            .trim()
+            .to_string();
         map.insert(node_id, (left_connection, right_connection));
     }
 
@@ -26,7 +42,7 @@ fn main() {
         let mut current_node = node;
         let mut steps_count: u64 = 0;
         while !current_node.ends_with('Z') {
-            let instr_index: usize = ((steps_count as usize) % instructions.len()) as usize;
+            let instr_index: usize = (steps_count as usize) % instructions.len();
             current_node = get_next_node(&current_node, instructions[instr_index], &map);
             steps_count += 1;
         }
@@ -42,7 +58,11 @@ fn main() {
     println!("Steps counts: {:?}", all_steps_count);
     println!("All steps to the end: {}", all_steps);
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
 fn find_all_start_nodes(nodes: Vec<String>) -> Vec<String> {
@@ -55,7 +75,11 @@ fn find_all_start_nodes(nodes: Vec<String>) -> Vec<String> {
     start_nodes
 }
 
-fn get_next_node(current_node: &String, instruction: char, map: &HashMap<String, (String, String)>) -> String {
+fn get_next_node(
+    current_node: &String,
+    instruction: char,
+    map: &HashMap<String, (String, String)>,
+) -> String {
     let node_connections = map.get(current_node).unwrap();
     if instruction == 'L' {
         node_connections.0.clone()

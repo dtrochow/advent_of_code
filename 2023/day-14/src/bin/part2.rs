@@ -20,7 +20,7 @@ fn main() {
         perform_cycle(&mut grid);
         if let Some(idx) = seen.iter().position(|x| x == &grid) {
             let cycle_len = seen.len() - idx;
-            let last_grid_idx =  idx + (1000_000_000 - idx) % cycle_len;
+            let last_grid_idx = idx + (1_000_000_000 - idx) % cycle_len;
             let load = measure_load(&seen[last_grid_idx]);
             println!("Load: {}", load);
             break;
@@ -28,10 +28,14 @@ fn main() {
         seen.push(grid.clone());
     }
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
-fn perform_cycle(grid: &mut Grid) -> () {
+fn perform_cycle(grid: &mut Grid) {
     for _ in 0..4 {
         tilt_to_the_north(grid);
         *grid = rotate_clockwise(grid);
@@ -43,7 +47,7 @@ fn rotate_clockwise(grid: &Grid) -> Grid {
     let mut rotated_grid: Grid = vec![vec![EMPTY; size]; size];
     for i in 0..size {
         for j in 0..size {
-            rotated_grid[i][j] = grid[size - 1 -j][i];
+            rotated_grid[i][j] = grid[size - 1 - j][i];
         }
     }
     rotated_grid
@@ -61,27 +65,26 @@ fn measure_load(grid: &Grid) -> u32 {
     load as u32
 }
 
-fn tilt_to_the_north(grid: &mut Grid) -> () {
+fn tilt_to_the_north(grid: &mut Grid) {
     let horizontal_size = grid.first().unwrap().len();
     for column in 0..horizontal_size {
         move_round_rocks_in_column(grid, column);
     }
 }
 
-fn move_round_rocks_in_column(grid: &mut Grid, column: usize) -> () {
+fn move_round_rocks_in_column(grid: &mut Grid, column: usize) {
     let column_size = grid.len();
 
     for column_index in 1..column_size {
         if grid[column_index][column] == ROUND_ROCK {
-            let first_empty = find_first_empty(grid, column, column_index);
-            if first_empty.is_some() {
-                move_rock(grid, column, column_index, first_empty.unwrap());
+            if let Some(empty_id) = find_first_empty(grid, column, column_index) {
+                move_rock(grid, column, column_index, empty_id);
             }
         }
     }
 }
 
-fn move_rock(grid: &mut Grid, column: usize, column_index_1: usize, column_index_2: usize) -> () {
+fn move_rock(grid: &mut Grid, column: usize, column_index_1: usize, column_index_2: usize) {
     let tmp = grid[column_index_1][column];
     grid[column_index_1][column] = grid[column_index_2][column];
     grid[column_index_2][column] = tmp;

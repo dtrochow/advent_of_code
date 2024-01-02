@@ -3,13 +3,13 @@ use std::fs::read_to_string;
 struct Set {
     red: u32,
     green: u32,
-    blue: u32
+    blue: u32,
 }
 
 enum Color {
     Red(u32),
     Green(u32),
-    Blue(u32)
+    Blue(u32),
 }
 
 fn main() {
@@ -28,15 +28,19 @@ fn parse_cube_num(cube_desc: String) -> Option<Color> {
     let cubes_quantity: u32 = cube_key_val.first().unwrap().parse().unwrap();
 
     match color_string {
-        "red" => return Some(Color::Red(cubes_quantity)),
-        "green" => return Some(Color::Green(cubes_quantity)),
-        "blue" => return Some(Color::Blue(cubes_quantity)),
-        &_ => None
+        "red" => Some(Color::Red(cubes_quantity)),
+        "green" => Some(Color::Green(cubes_quantity)),
+        "blue" => Some(Color::Blue(cubes_quantity)),
+        &_ => None,
     }
 }
 
 fn parse_game_set(set_desc: String) -> Set {
-    let mut game = Set{red:0, green:0, blue:0};
+    let mut game = Set {
+        red: 0,
+        green: 0,
+        blue: 0,
+    };
     let mut cubes_with_values: Vec<Color> = Vec::<Color>::new();
 
     let cubes: Vec<&str> = set_desc.split(',').collect();
@@ -75,11 +79,17 @@ fn get_minimum_cubes_power(game_desc: String) -> u32 {
     let mut max_green = 0;
 
     for set in sets {
-        if set.red > max_red { max_red = set.red }
-        if set.green > max_green { max_green = set.green }
-        if set.blue > max_blue { max_blue = set.blue }
+        if set.red > max_red {
+            max_red = set.red
+        }
+        if set.green > max_green {
+            max_green = set.green
+        }
+        if set.blue > max_blue {
+            max_blue = set.blue
+        }
     }
-    
+
     max_red * max_blue * max_green
 }
 

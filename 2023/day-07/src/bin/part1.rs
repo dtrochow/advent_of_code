@@ -2,10 +2,10 @@
 extern crate maplit;
 
 use lazy_static::lazy_static;
+use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::fs::read_to_string;
 use std::time::Instant;
-use std::collections::HashMap;
-use std::cmp::Ordering;
 
 #[derive(PartialEq, PartialOrd)]
 enum HandType {
@@ -15,7 +15,7 @@ enum HandType {
     Three = 4,
     TwoPairs = 3,
     Pair = 2,
-    Single = 1
+    Single = 1,
 }
 
 lazy_static! {
@@ -58,47 +58,64 @@ fn main() {
     }
     println!("Total winnings: {}", total_winnings);
 
-    println!("Elapsed time: {}s {}ms", now.elapsed().as_secs(), now.elapsed().subsec_millis());
+    println!(
+        "Elapsed time: {}s {}ms",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_millis()
+    );
 }
 
-fn find_type(a: &String) -> HandType {
-    if one_of(5, a)     { return HandType::Five; }
-    if one_of(4, a)     { return HandType::Four; }
-    if full_house(a)    { return HandType::FullHouse; }
-    if one_of(3, a)     { return HandType::Three; }
-    if two_pairs(a)     { return HandType::TwoPairs; }
-    if one_of(2, a)     { return HandType::Pair; }
+fn find_type(a: &str) -> HandType {
+    if one_of(5, a) {
+        return HandType::Five;
+    }
+    if one_of(4, a) {
+        return HandType::Four;
+    }
+    if full_house(a) {
+        return HandType::FullHouse;
+    }
+    if one_of(3, a) {
+        return HandType::Three;
+    }
+    if two_pairs(a) {
+        return HandType::TwoPairs;
+    }
+    if one_of(2, a) {
+        return HandType::Pair;
+    }
 
     HandType::Single
 }
 
 // Check if A is LESS or GREATER than B
-fn compare_two_hands(a: &String, b: &String) -> Ordering {
+fn compare_two_hands(a: &str, b: &str) -> Ordering {
     let a_type = find_type(a);
     let b_type = find_type(b);
 
     if a_type > b_type {
-        return Ordering::Greater;
+        Ordering::Greater
     } else if a_type < b_type {
-        return Ordering::Less;
+        Ordering::Less
     } else {
         greater_first_card(a, b)
     }
 }
 
-fn full_house(hand: &String) -> bool{
+fn full_house(hand: &str) -> bool {
     if one_of(3, hand) && one_of(2, hand) {
         return true;
     }
     false
 }
 
-fn two_pairs(hand: &String) -> bool {
+fn two_pairs(hand: &str) -> bool {
     let mut card_values: HashMap<u32, u32> = HashMap::new();
     for ch in hand.chars() {
-        card_values.entry(CARDS[&ch])
-                   .and_modify(|existing_val| *existing_val += 1)
-                   .or_insert(1);
+        card_values
+            .entry(CARDS[&ch])
+            .and_modify(|existing_val| *existing_val += 1)
+            .or_insert(1);
     }
 
     let mut pairs_count: u32 = 0;
@@ -115,7 +132,7 @@ fn two_pairs(hand: &String) -> bool {
     false
 }
 
-fn greater_first_card(a: &String, b: &String) -> Ordering {
+fn greater_first_card(a: &str, b: &str) -> Ordering {
     for (a_val, b_val) in a.chars().into_iter().zip(b.chars().into_iter()) {
         if a_val != b_val {
             if CARDS[&a_val] < CARDS[&b_val] {
@@ -128,12 +145,13 @@ fn greater_first_card(a: &String, b: &String) -> Ordering {
     Ordering::Equal
 }
 
-fn one_of(how_many: u32, hand: &String) -> bool {
+fn one_of(how_many: u32, hand: &str) -> bool {
     let mut card_values: HashMap<u32, u32> = HashMap::new();
     for ch in hand.chars() {
-        card_values.entry(CARDS[&ch])
-                   .and_modify(|existing_val| *existing_val += 1)
-                   .or_insert(1);
+        card_values
+            .entry(CARDS[&ch])
+            .and_modify(|existing_val| *existing_val += 1)
+            .or_insert(1);
     }
     for (_, count) in card_values.into_iter() {
         if count == how_many {
