@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate maplit;
 
+use std::cmp;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs::read_to_string;
@@ -40,15 +41,33 @@ fn main() {
 
     // build graph
     let graph: Graph = build_graph(&grid, &nodes);
-    println!("Graph: {:?}", graph);
 
     // find the longest road
+    let mut seen: HashSet<Point> = HashSet::new();
+    let longest_road = dfs(&start, &end, &graph, &mut seen);
+    println!("Longest road: {}", longest_road);
 
     println!(
         "Elapsed time: {}s {}ms",
         now.elapsed().as_secs(),
         now.elapsed().subsec_millis()
     );
+}
+
+// Depth-first search
+fn dfs(point: &Point, end: &Point, graph: &Graph, seen: &mut HashSet<Point>) -> i32 {
+    if point == end {
+        return 0;
+    }
+
+    let mut m = 0;
+    seen.insert(*point);
+    for nx in graph.get(point).unwrap().keys() {
+        m = cmp::max(m, dfs(nx, end, graph, seen) + graph[point][nx] as i32);
+    }
+    seen.remove(point);
+
+    m
 }
 
 fn build_graph(grid: &Grid, nodes: &Vec<Point>) -> Graph {
