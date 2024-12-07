@@ -31,6 +31,10 @@ where
     }).collect()
 }
 
+pub fn find_index<T: PartialEq>(v: &[T], item: &T) -> Option<usize> {
+    v.iter().position(|x| x == item)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
