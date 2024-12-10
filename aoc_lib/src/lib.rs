@@ -1,5 +1,29 @@
 use std::fs::read_to_string;
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct Point {
+    x: usize,
+    y: usize,
+}
+
+pub fn find_all_value_positions<T>(v: &Vec<Vec<T>>, val: T) -> Vec<Point>
+where
+    T: PartialEq + Copy,
+{
+    v.iter()
+        .enumerate()
+        .flat_map(|(x, row)| {
+            row.iter().enumerate().filter_map(move |(y, value)| {
+                if val == *value {
+                    Some(Point{x, y})
+                } else {
+                    None
+                }
+            })
+        })
+        .collect()
+}
+
 pub fn read_lines(filename: &str) -> Vec<String> {
     let mut result = Vec::new();
 
@@ -25,10 +49,12 @@ where
     T: Clone,
 {
     let vec = transpose_matrix(v);
-    vec.into_iter().map(|mut row| {
-        row.reverse();
-        row
-    }).collect()
+    vec.into_iter()
+        .map(|mut row| {
+            row.reverse();
+            row
+        })
+        .collect()
 }
 
 pub fn find_index<T: PartialEq>(v: &[T], item: &T) -> Option<usize> {
@@ -38,5 +64,4 @@ pub fn find_index<T: PartialEq>(v: &[T], item: &T) -> Option<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 }
