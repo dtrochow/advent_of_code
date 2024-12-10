@@ -1,12 +1,38 @@
 use std::fs::read_to_string;
+use std::ops::Add;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Point {
-    x: usize,
-    y: usize,
+    pub x: i64,
+    pub y: i64,
 }
 
-pub fn find_all_value_positions<T>(v: &Vec<Vec<T>>, val: T) -> Vec<Point>
+pub const DIRECTIONS: [Point; 4] = [
+    Point { x: 1, y: 0 },
+    Point { x: 0, y: 1 },
+    Point { x: -1, y: 0 },
+    Point { x: 0, y: -1 },
+];
+
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, other: Point) -> Point {
+        Point {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+pub fn is_in_2d_map<T>(v: &[Vec<T>], point: &Point) -> bool {
+    point.x >= 0
+        && point.x < v.len() as i64
+        && point.y >= 0
+        && point.y < v.first().unwrap().len() as i64
+}
+
+pub fn find_all_value_positions<T>(v: &[Vec<T>], val: T) -> Vec<Point>
 where
     T: PartialEq + Copy,
 {
@@ -15,7 +41,7 @@ where
         .flat_map(|(x, row)| {
             row.iter().enumerate().filter_map(move |(y, value)| {
                 if val == *value {
-                    Some(Point{x, y})
+                    Some(Point{x: x.try_into().unwrap(), y: y.try_into().unwrap()})
                 } else {
                     None
                 }
