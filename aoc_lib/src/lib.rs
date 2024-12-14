@@ -1,10 +1,68 @@
 use std::fs::read_to_string;
 use std::ops::Add;
+use strum_macros::EnumIter;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Point {
     pub x: i64,
     pub y: i64,
+}
+
+#[allow(clippy::upper_case_acronyms)]
+#[derive(Debug, EnumIter, Clone)]
+pub enum QuadrantId {
+    I,
+    II,
+    III,
+    IV,
+}
+
+/*
+   I  | II
+ ---------
+  III | IV
+*/
+pub fn get_quadrant_borders(q_id: QuadrantId, field_size: &Point) -> Borders {
+    match q_id {
+        QuadrantId::I => Borders {
+            up: 0,
+            down: (field_size.y / 2) - 1,
+            left: 0,
+            right: (field_size.x / 2) - 1,
+        },
+        QuadrantId::II => Borders {
+            up: 0,
+            down: (field_size.y / 2) - 1,
+            left: (field_size.x / 2) + 1,
+            right: field_size.x - 1,
+        },
+        QuadrantId::III => Borders {
+            up: (field_size.y / 2) + 1,
+            down: field_size.y - 1,
+            left: 0,
+            right: (field_size.x / 2) - 1,
+        },
+        QuadrantId::IV => Borders {
+            up: (field_size.y / 2) + 1,
+            down: field_size.y - 1,
+            left: (field_size.x / 2) + 1,
+            right: field_size.x - 1,
+        },
+    }
+}
+
+#[derive(Debug)]
+pub struct Borders {
+    pub up: i64,
+    pub down: i64,
+    pub left: i64,
+    pub right: i64,
+}
+
+impl Borders {
+    pub fn is_within_borders(&self, point: &Point) -> bool {
+        point.x >= self.left && point.x <= self.right && point.y >= self.up && point.y <= self.down
+    }
 }
 
 pub const DIRECTIONS: [Point; 4] = [
@@ -41,7 +99,10 @@ where
         .flat_map(|(x, row)| {
             row.iter().enumerate().filter_map(move |(y, value)| {
                 if val == *value {
-                    Some(Point{x: x.try_into().unwrap(), y: y.try_into().unwrap()})
+                    Some(Point {
+                        x: x.try_into().unwrap(),
+                        y: y.try_into().unwrap(),
+                    })
                 } else {
                     None
                 }
