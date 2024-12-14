@@ -1,5 +1,4 @@
-use aoc_lib::{get_quadrant_borders, read_lines, Point, QuadrantId};
-use strum::IntoEnumIterator;
+use aoc_lib::{read_lines, Point};
 
 /* Tiles per second in x and y direction */
 type Velocity = Point;
@@ -14,7 +13,6 @@ type BathroomSize = Point;
 */
 const X_SIZE: usize = 101;
 const Y_SIZE: usize = 103;
-const SECONDS_NUMBER: usize = 100;
 
 #[derive(Debug)]
 struct Robot {
@@ -54,7 +52,7 @@ fn get_robots(lines: Vec<String>) -> Vec<Robot> {
         .collect()
 }
 
-fn get_robot_pos_after_seconds(robot: &Robot, seconds_num: usize, bathroom_size: &Point) -> Point {
+fn update_robot_pos_after_seconds(robot: &mut Robot, seconds_num: usize, bathroom_size: &Point) {
     let points_to_move_x = (seconds_num as i64 * robot.vel.x) % bathroom_size.x;
 
     let (pos_x_after, pos_y_after);
@@ -81,32 +79,23 @@ fn get_robot_pos_after_seconds(robot: &Robot, seconds_num: usize, bathroom_size:
         pos_y_after = robot.pos.y + points_to_move_y;
     }
 
-    Point {
+    robot.pos = Point {
         x: pos_x_after,
         y: pos_y_after,
-    }
+    };
 }
 
-fn count_robots_in_quadrant(
-    robots_pos: &[Point],
-    bathroom_size: &Point,
-    q_id: QuadrantId,
-) -> usize {
-    let borders = get_quadrant_borders(q_id, bathroom_size);
-    robots_pos
-        .iter()
-        .filter(|pos| borders.is_within_borders(pos))
-        .count()
-}
-
-fn print_robots_arrangement(robots_pos: &Vec<Point>) {
-    const ROBOT_MARK: char = 'O';
+fn print_robots_arrangement(robots: &Vec<Robot>) {
+    const ROBOT_MARK: char = 'o';
 
     let mut bathroom_floor: Vec<Vec<usize>> = vec![vec![0; X_SIZE]; Y_SIZE];
-    for pos in robots_pos {
+    for robot in robots {
+        let pos = robot.pos;
         bathroom_floor[pos.y as usize][pos.x as usize] += 1;
     }
+    println!("{}", '_'.to_string().repeat(X_SIZE + 2));
     for row in bathroom_floor {
+        print!("|");
         for robot in row {
             if robot > 0 {
                 print!("{}", ROBOT_MARK);
@@ -114,36 +103,50 @@ fn print_robots_arrangement(robots_pos: &Vec<Point>) {
                 print!(" ");
             }
         }
-        println!();
+        println!("|");
     }
+    println!("{}", '^'.to_string().repeat(X_SIZE + 2));
+}
+
+fn move_robots(robots: &mut Vec<Robot>, bathroom_size: &Point, seconds: usize) {
+    for robot in robots {
+        update_robot_pos_after_seconds(robot, seconds, bathroom_size);
+    }
+}
+
+fn calculate_standard_deviation(robots: &Vec<Robot>) -> f64 {
+    let mean: f64 =
+        (robots.iter().map(|r| r.pos.x + r.pos.y).sum::<i64>() / robots.len() as i64) as f64;
+    let mut sum_squares: f64 = 0.0;
+    for robot in robots {
+        sum_squares += (robot.pos.x as f64 + robot.pos.y as f64 - mean).powi(2);
+    }
+    (sum_squares / robots.len() as f64).sqrt()
+}
+
+fn is_tree_picture(robots: &Vec<Robot>) -> bool {
+    let sd = calculate_standard_deviation(robots);
+    if sd < 27.0 {
+        println!("SD: {}", sd);
+        return true;
+    }
+    false
 }
 
 fn main() {
     let lines = read_lines("./src/bin/input1.txt");
-    let robots = get_robots(lines);
+    let mut robots = get_robots(lines);
 
     let bathroom_size = BathroomSize {
         x: X_SIZE as i64,
         y: Y_SIZE as i64,
     };
-    let mut robot_positions_after: Vec<Point> = Vec::new();
-    for robot in robots {
-        robot_positions_after.push(get_robot_pos_after_seconds(
-            &robot,
-            SECONDS_NUMBER,
-            &bathroom_size,
-        ));
+
+    let mut seconds_cnt = 0;
+    while !is_tree_picture(&robots) {
+        move_robots(&mut robots, &bathroom_size, 1);
+        seconds_cnt += 1;
     }
-
-    print_robots_arrangement(&robot_positions_after);
-
-    let mut quadrant_robots_num: Vec<usize> = Vec::new();
-    for q_id in QuadrantId::iter() {
-        let robots_num =
-            count_robots_in_quadrant(&robot_positions_after, &bathroom_size, q_id.clone());
-        quadrant_robots_num.push(robots_num);
-    }
-
-    let safety_factor: usize = quadrant_robots_num.iter().product();
-    println!("Safety factor: {}", safety_factor);
+    print_robots_arrangement(&robots);
+    println!("Seconds count: {}", seconds_cnt);
 }
