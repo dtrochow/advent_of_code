@@ -20,7 +20,7 @@ fn get_field_points(
         return None;
     }
 
-    let mut stack: Vec<Point> = vec![start.clone()];
+    let mut stack: Vec<Point> = vec![*start];
     let mut field_points: Vec<Point> = Vec::new();
     let plant_kind = garden[start.x as usize][start.y as usize];
 
@@ -29,7 +29,7 @@ fn get_field_points(
             continue;
         }
         for direction in DIRECTIONS {
-            let neighbor_pos = position.clone() + direction;
+            let neighbor_pos = position + direction;
             if is_in_2d_map(garden, &neighbor_pos)
                 && !field_points.contains(&neighbor_pos)
                 && garden[neighbor_pos.x as usize][neighbor_pos.y as usize] == plant_kind
@@ -37,7 +37,7 @@ fn get_field_points(
                 stack.push(neighbor_pos);
             }
         }
-        field_points.push(position.clone());
+        field_points.push(position);
     }
     registered.extend(field_points.clone());
 
@@ -46,9 +46,9 @@ fn get_field_points(
 
 fn get_field_perimeter(garden: &Garden, field_points: &Vec<Point>, plant_kind: &char) -> u64 {
     let mut fence_length = 0;
-    for flower_pos in field_points {
+    for plant_pos in field_points {
         for direction in DIRECTIONS {
-            let neighbor_pos = direction + flower_pos.clone();
+            let neighbor_pos = direction + *plant_pos;
             if !is_in_2d_map(garden, &neighbor_pos)
                 || garden[neighbor_pos.x as usize][neighbor_pos.y as usize] != *plant_kind
             {
