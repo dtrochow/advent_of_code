@@ -2,7 +2,15 @@ use std::fs::read_to_string;
 use std::ops::Add;
 use strum_macros::EnumIter;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, PartialEq)]
+pub enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Point {
     pub x: i64,
     pub y: i64,
@@ -80,6 +88,14 @@ impl Add for Point {
             x: self.x + other.x,
             y: self.y + other.y,
         }
+    }
+}
+
+impl Point {
+    pub fn is_symmetrical_in_x_axis(&self, point: &Point, symmetry_axis: usize) -> bool {
+        self.y == point.y
+            && (self.x - symmetry_axis as i64).abs() == (point.x - symmetry_axis as i64).abs()
+            && self != point
     }
 }
 
