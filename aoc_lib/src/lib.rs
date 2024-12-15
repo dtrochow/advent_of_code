@@ -2,7 +2,7 @@ use std::fs::read_to_string;
 use std::ops::Add;
 use strum_macros::EnumIter;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Direction {
     Up,
     Down,
