@@ -1,11 +1,11 @@
 use std::fs::read_to_string;
-use std::ops::Add;
+use std::ops::{Add, Sub};
 use strum_macros::EnumIter;
 
 #[derive(Debug)]
 pub enum Axis {
     X,
-    Y
+    Y,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -14,6 +14,23 @@ pub enum Direction {
     Down,
     Left,
     Right,
+}
+
+impl Direction {
+    pub fn point(&self) -> Point {
+        /*
+           x ->
+         y . . .
+         | . . .
+         v . . .
+        */
+        match self {
+            Direction::Down => Point { x: 0, y: 1 },
+            Direction::Up => Point { x: 0, y: -1 },
+            Direction::Left => Point { x: -1, y: 0 },
+            Direction::Right => Point { x: 1, y: 0 },
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -93,6 +110,17 @@ impl Add for Point {
         Point {
             x: self.x + other.x,
             y: self.y + other.y,
+        }
+    }
+}
+
+impl Sub for Point {
+    type Output = Point;
+
+    fn sub(self, other: Point) -> Point {
+        Point {
+            x: self.x - other.x,
+            y: self.y - other.y,
         }
     }
 }

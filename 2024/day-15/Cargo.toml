@@ -1,0 +1,23 @@
+[package]
+name = "year-24-day-15"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+maplit = "1.0"
+aoc_lib = { path = "../../aoc_lib" }
+regex = "1.11.1"
+fraction = "0.15.3"
+strum_macros = "0.26.4"
+strum = "0.26.3"
+
+# Include binaries in the workspace
+[[bin]]
+name = "part1"
+path = "src/bin/part1.rs"
+
+[[bin]]
+name = "part2"
+path = "src/bin/part2.rs"
