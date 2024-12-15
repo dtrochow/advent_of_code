@@ -2,6 +2,12 @@ use std::fs::read_to_string;
 use std::ops::Add;
 use strum_macros::EnumIter;
 
+#[derive(Debug)]
+pub enum Axis {
+    X,
+    Y
+}
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Direction {
     Up,
