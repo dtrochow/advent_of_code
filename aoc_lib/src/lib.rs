@@ -220,4 +220,30 @@ pub fn find_index<T: PartialEq>(v: &[T], item: &T) -> Option<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_is_in_2d_map() {
+        let map = vec![vec![0; 5]; 8];
+        assert!(is_in_2d_map(&map, &Point { x: 7, y: 4 }));
+        assert!(!is_in_2d_map(&map, &Point { x: 7, y: 5 }));
+        assert!(!is_in_2d_map(&map, &Point { x: 8, y: 4 }));
+
+        let map2 = vec![vec![0; 10]; 9];
+        assert!(is_in_2d_map(&map2, &Point { x: 8, y: 9 }));
+        assert!(!is_in_2d_map(&map2, &Point { x: 9, y: 9 }));
+        assert!(!is_in_2d_map(&map2, &Point { x: 8, y: 10 }));
+    }
+
+    #[test]
+    fn test_is_in_2d_map2() {
+        let map = vec![vec![0; 5]; 8];
+        assert!(is_in_2d_map2(&map, &Point { x: 4, y: 7 }));
+        assert!(!is_in_2d_map2(&map, &Point { x: 5, y: 7 }));
+        assert!(!is_in_2d_map2(&map, &Point { x: 4, y: 8 }));
+
+        let map2 = vec![vec![0; 10]; 9];
+        assert!(is_in_2d_map2(&map2, &Point { x: 9, y: 8 }));
+        assert!(!is_in_2d_map2(&map2, &Point { x: 9, y: 9 }));
+        assert!(!is_in_2d_map2(&map2, &Point { x: 10, y: 8 }));
+    }
 }
