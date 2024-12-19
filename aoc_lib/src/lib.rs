@@ -133,11 +133,30 @@ impl Point {
     }
 }
 
+/**
+ *   y ->
+ *  x . . .
+ *  | . . .
+ *  v . . .
+ */
 pub fn is_in_2d_map<T>(v: &[Vec<T>], point: &Point) -> bool {
     point.x >= 0
         && point.x < v.len() as i64
         && point.y >= 0
         && point.y < v.first().unwrap().len() as i64
+}
+
+/**
+ *   x ->
+ *  y . . .
+ *  | . . .
+ *  v . . .
+ */
+pub fn is_in_2d_map2<T>(v: &[Vec<T>], point: &Point) -> bool {
+    point.y >= 0
+        && point.y < v.len() as i64
+        && point.x >= 0
+        && point.x < v.first().unwrap().len() as i64
 }
 
 pub fn find_all_value_positions<T>(v: &[Vec<T>], val: T) -> Vec<Point>
