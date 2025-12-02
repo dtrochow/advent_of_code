@@ -32,39 +32,57 @@ fn get_all_rotations(lines: Vec<String>) -> Vec<Rotation> {
 fn rotate_dial(rotations: Vec<Rotation>, starting_point: i32) -> u32 {
     let mut number_of_zero_hit: u32 = 0;
     let mut current_position: i32 = starting_point;
+
     for rotation in rotations {
+        println!("Current position: {}", current_position);
         println!(
             "Rotating {:?} for {} clicks",
             rotation.direction, rotation.clicks
         );
+
         let clicks: i32 = rotation.clicks;
+        let full_rotations: u32 = (clicks / 100).try_into().unwrap();
+        println!("Full rotations: {}", full_rotations);
+        number_of_zero_hit += full_rotations;
+
         match rotation.direction {
             Direction::Left => {
-                let diff = (current_position - clicks) % 100;
+                let diff = current_position - (clicks % 100);
                 if diff < 0 {
+                    if current_position != 0 {
+                        number_of_zero_hit += 1;
+                        println!("Zero hit left! {}", number_of_zero_hit);
+                    }
                     current_position = 100 - diff.abs();
                 } else {
                     current_position = diff;
                 }
             }
             Direction::Right => {
-                let diff = (current_position + clicks) % 100;
+                let diff = current_position + (clicks % 100);
+
                 if diff > 99 {
                     current_position = diff - 100;
+                    if current_position != 0 {
+                        number_of_zero_hit += 1;
+                        println!("Zero hit right! {}", number_of_zero_hit);
+                    }
                 } else {
                     current_position = diff;
                 }
             }
         }
+
         if current_position == 0 {
-            number_of_zero_hit += 1
+            number_of_zero_hit += 1;
+            println!("Zero hit! {}", number_of_zero_hit);
         }
 
         if !(0..=99).contains(&current_position) {
             println!("ERROR: {:?}", rotation);
             return 0;
         }
-        println!("Current position: {}", current_position);
+        println!("Current position: {}\n", current_position);
     }
     number_of_zero_hit
 }
