@@ -13,9 +13,9 @@ fn get_battery_banks(lines: Vec<String>) -> Vec<BatteryBank> {
 fn find_tens_digit(battery_bank: &BatteryBank) -> (u32, usize) {
     let mut max = 0;
     let mut index = 0;
-    for i in 0..(battery_bank.len() - 1) {
-        if battery_bank[i] > max {
-            max = battery_bank[i];
+    for (i, battery) in battery_bank.iter().enumerate().take(battery_bank.len() - 1) {
+        if *battery > max {
+            max = *battery;
             index = i;
         }
     }
