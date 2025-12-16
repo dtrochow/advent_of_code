@@ -10,12 +10,11 @@ enum Operation {
 type Numbers = Vec<Vec<u64>>;
 type Operations = Vec<Operation>;
 
-fn get_numbers(lines: &Vec<String>) -> Numbers {
+fn get_numbers(lines: &[String]) -> Numbers {
     let mut numbers: Numbers = Vec::new();
     for line in lines.iter().take(lines.len() - 1) {
         numbers.push(
             line.split_whitespace()
-                .into_iter()
                 .map(|n| n.parse().unwrap())
                 .collect(),
         );
@@ -23,12 +22,11 @@ fn get_numbers(lines: &Vec<String>) -> Numbers {
     numbers
 }
 
-fn get_operations(lines: &Vec<String>) -> Operations {
+fn get_operations(lines: &[String]) -> Operations {
     lines
         .last()
         .unwrap()
         .split_whitespace()
-        .into_iter()
         .map(|o| match o {
             "*" => Operation::Multiply,
             "+" => Operation::Add,
