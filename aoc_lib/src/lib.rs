@@ -33,7 +33,7 @@ impl Direction {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Point {
     pub x: i64,
     pub y: i64,
